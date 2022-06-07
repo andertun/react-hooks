@@ -3,8 +3,11 @@
 
 import {useState, useEffect} from 'react'
 
+const emptyBoard = Array(9).fill(null)
 function Board() {
-  const [squares, setSquares] = useState(Array(9).fill(null))
+  const [squares, setSquares] = useState(
+    () => localStorage.getItem('squares').split(',') || emptyBoard,
+  )
   const [nextValue, setNextValue] = useState(calculateNextValue(squares))
   const [winner, setWinner] = useState(calculateWinner(squares))
   const [status, setStatus] = useState(
@@ -17,6 +20,10 @@ function Board() {
     setStatus(calculateStatus(winner, squares, nextValue))
   }, [nextValue, squares, winner])
 
+  useEffect(() => {
+    localStorage.setItem('squares', squares.join(','))
+  }, [squares])
+
   function selectSquare(square) {
     if (winner || squares[square]) {
       return
@@ -27,7 +34,7 @@ function Board() {
   }
 
   function restart() {
-    setSquares(Array(9).fill(null))
+    setSquares(emptyBoard)
   }
 
   function renderSquare(i) {
